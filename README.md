@@ -17,12 +17,7 @@ Next, add this to your crate root:
 extern crate tun;
 ```
 
-If you want to use the TUN interface with mio/tokio, you need to enable the `async` feature:
-
-```toml
-[dependencies]
-tun = { version = "0.5", features = ["async"] }
-```
+If you want to use the TUN interface with async, you can use as_raw_fd()
 
 Example
 -------
@@ -92,15 +87,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 ```rust
 #[no_mangle]
 pub extern "C" fn start_tun(fd: std::os::raw::c_int) {
-    let mut rt = tokio::runtime::Runtime::new().unwrap();
-    rt.block_on(async {
-        let mut cfg = tun::Configuration::default();
-        cfg.raw_fd(fd);
-        let mut tun = tun::create_as_async(&cfg).unwrap();
-        let mut framed = tun.into_framed();
-        while let Some(packet) = framed.next().await {
-            ...
-        }
-    });
+    let mut cfg = tun::Configuration::default();
+    cfg.raw_fd(fd);
+    let mut tun = tun::create(&cfg).unwrap();
+    //TODO process in thread or async
 }
 ```

@@ -14,12 +14,13 @@
 
 use std::io::{Read, Write};
 use std::net::Ipv4Addr;
+use std::os::fd::AsRawFd;
 
 use crate::configuration::Configuration;
 use crate::error::*;
 
 /// A TUN device.
-pub trait Device: Read + Write {
+pub trait Device: Read + Write + AsRawFd {
     type Queue: Read + Write;
 
     /// Reconfigure the device.

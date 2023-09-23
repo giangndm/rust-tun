@@ -12,14 +12,18 @@
 //
 //  0. You just DO WHAT THE FUCK YOU WANT TO.
 
-use std::io::Read;
+use std::os::fd::{AsRawFd, FromRawFd};
+use async_std::fs::File;
+use futures::{AsyncReadExt, AsyncWriteExt};
 
-fn main() {
+#[async_std::main]
+async fn main() {
     let mut config = tun::Configuration::default();
 
     config
-        .address((10, 0, 0, 1))
-        .netmask((255, 255, 255, 0))
+        .address((10, 0, 0, 2))
+        .netmask((255, 255, 255, 0))    
+        .mtu(1200)
         .up();
 
     #[cfg(target_os = "linux")]
@@ -27,11 +31,22 @@ fn main() {
         config.packet_information(true);
     });
 
-    let mut dev = tun::create(&config).unwrap();
+    let dev = tun::create(&config).unwrap();
+    let mut async_file = unsafe {
+        File::from_raw_fd(dev.as_raw_fd())   
+    };
     let mut buf = [0; 4096];
 
     loop {
-        let amount = dev.read(&mut buf).unwrap();
-        println!("{:?}", &buf[0..amount]);
+        let amount = async_file.read(&mut buf).await.unwrap();
+        println!("Read {}", amount);
+        match async_file.write(&buf[0..amount]).await {
+            Ok(amount) => {
+                println!("Write {}", amount);
+            }
+            Err(e) => {
+                println!("Error {:?}", e);
+            }
+        }
     }
 }

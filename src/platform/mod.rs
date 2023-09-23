@@ -47,8 +47,7 @@ mod test {
     fn create() {
         let dev = super::create(
             Configuration::default()
-                .name("utun6")
-                .address("192.168.50.1")
+                .address("10.0.0.2")
                 .netmask("255.255.0.0")
                 .mtu(1400)
                 .up(),
@@ -56,7 +55,7 @@ mod test {
         .unwrap();
 
         assert_eq!(
-            "192.168.50.1".parse::<Ipv4Addr>().unwrap(),
+            "10.0.0.2".parse::<Ipv4Addr>().unwrap(),
             dev.address().unwrap()
         );
 
