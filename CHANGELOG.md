@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1](https://github.com/giangndm/rust-tun/compare/v0.1.0...v0.1.1) - 2023-11-17
+
+### Other
+- release ([#1](https://github.com/giangndm/rust-tun/pull/1))
+
 ## [0.1.0](https://github.com/giangndm/rust-tun/releases/tag/v0.1.0) - 2023-11-17
 
 ### Added
