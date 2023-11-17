@@ -12,17 +12,17 @@
 //
 //  0. You just DO WHAT THE FUCK YOU WANT TO.
 
-use std::os::fd::{AsRawFd, FromRawFd};
 use async_std::fs::File;
 use futures::{AsyncReadExt, AsyncWriteExt};
+use std::os::fd::{AsRawFd, FromRawFd};
 
 #[async_std::main]
 async fn main() {
-    let mut config = tun::Configuration::default();
+    let mut config = tun_sync::Configuration::default();
 
     config
         .address((10, 0, 0, 2))
-        .netmask((255, 255, 255, 0))    
+        .netmask((255, 255, 255, 0))
         .mtu(1200)
         .up();
 
@@ -31,10 +31,8 @@ async fn main() {
         config.packet_information(true);
     });
 
-    let dev = tun::create(&config).unwrap();
-    let mut async_file = unsafe {
-        File::from_raw_fd(dev.as_raw_fd())   
-    };
+    let dev = tun_sync::create(&config).unwrap();
+    let mut async_file = unsafe { File::from_raw_fd(dev.as_raw_fd()) };
     let mut buf = [0; 4096];
 
     loop {
